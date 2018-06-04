@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "comma-dangle": 1,
+    "max-len": [0, 140]
+  },
+  "parserOptions": {
+    "ecmaVersion": 8
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "amqpclient",
+  "version": "1.0.0",
+  "description": "AMQP(Advanced Message Queue Protocol) Client of Node.js",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "./node_modules/.bin/mocha --exit test"
+  },
+  "keywords": [
+    "amqp",
+    "rabbitmq",
+    "node.js"
+  ],
+  "author": "guanbo",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.5.2"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0",
+    "should": "^13.2.1"
+  }
+}
