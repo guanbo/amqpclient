@@ -7,7 +7,7 @@ An AMQP Client of Node.js base on amqplib with auto reconnect
 ### Producer
 
 ```js
-const AMQPClient = require('amqpclient');
+const AMQPClient = require('amqp.node.client');
 const producer = new AMQPClient({}, 1000);
 
 const q = 'amqpclient.test';
