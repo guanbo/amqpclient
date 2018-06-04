@@ -35,7 +35,7 @@ $ rabbitmqctl close_all_connections test_reconnect_case
 ### Consumer
 
 ```js
-const AMQPClient = require('amqpclient');
+const AMQPClient = require('amqp.node.client');
 const consumer = new AMQPClient();
 
 const q = 'amqpclient.test';
