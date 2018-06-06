@@ -4,7 +4,7 @@ An AMQP Client of Node.js base on amqplib with auto reconnect
 
 ## Quick Start
 
-### Producer
+### Consumer 
 
 ```js
 const AMQPClient = require('amqp.node.client');
@@ -32,7 +32,7 @@ producer.start((ch) => {
 $ rabbitmqctl close_all_connections test_reconnect_case
 ```
 
-### Consumer
+### Producer 
 
 ```js
 const AMQPClient = require('amqp.node.client');
