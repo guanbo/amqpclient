@@ -7,6 +7,8 @@ const { spawnSync } = require('child_process');
 
 describe('RPC', () => {
   const q = 'test.rpc.request';
+  const array = [1, 2, 3, 4];
+  let count = 0;
 
   before((done) => {
     rpcServer.rpcService(opts=>{
@@ -15,10 +17,25 @@ describe('RPC', () => {
     }, {queue: q}).then(()=>done(), done);
   });
 
-  it('should ok', (done) => {
-    rpcClient.rpc({a:1, b:2}, {queue: q}).then(res=>{
-      res.val.should.be.equal(3);
-      done();
+  function rpc(times) {
+    describe('#Call No: '+times, () => {
+      it('should ok', () => {
+        rpcClient.rpc({a: times, b:1}, {queue: q}).then(res=>{
+          res.val.should.be.equal(times+1);
+          count++;
+        });
+      });    
     });
+  }
+
+  array.forEach(rpc);
+
+  after((done) => {
+    let intervalId = setInterval(()=>{
+      if (count >= array.length) {
+        clearInterval(intervalId);
+        done();
+      }
+    }, 300);
   });
 });

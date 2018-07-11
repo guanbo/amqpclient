@@ -24,7 +24,7 @@ class AMQPClient {
   }
 
   connect() {
-    if (this.conn) return this.conn;
+    if (this.conn) return Promise.resolve(this.conn);
     return amqp.connect(this.options).then(conn => {
       this.conn = conn;
       console.log('[AMQP] connected');
