@@ -75,4 +75,8 @@ rpcClient.rpc({a:1, b:2}, {queue: q}).then(res=>{
 ```
 
 ## Environment
-- `RABBITMQ_HOST` default host if set
+- `RABBITMQ_HOST`   default host if set
+- `RABBITMQ_VHOST`  default vhost if set
+- `RABBITMQ_USER`   default username if set
+- `RABBITMQ_PWD`    default password if set
+- `RABBITMQ_PORT`   default port if set

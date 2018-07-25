@@ -9,13 +9,13 @@ class AMQPClient {
     this.options = Object.assign({
       protocol: 'amqp',
       hostname: process.env.RABBITMQ_HOST || 'localhost',
-      port: 5672,
-      username: 'guest',
-      password: 'guest',
+      port: process.env.RABBITMQ_PORT || 5672,
+      username: process.env.RABBITMQ_USER ||'guest',
+      password: process.env.RABBITMQ_PWD || 'guest',
       locale: 'en_US',
       frameMax: 0,
       heartbeat: 0,
-      vhost: '/',
+      vhost: process.env.RABBITMQ_VHOST || '/',
     }, options || {});
     this.interval = interval || 10000;
     this.rpcOptions = Object.assign({
