@@ -82,14 +82,19 @@ class AMQPClient {
           const q = this.rpcOptions.queue;
           ch.assertQueue(q, {durable: false});
           ch.prefetch(1);
-          console.log(' === Awaiting RPC requests on queue:', q);
+          console.log('[AMQP] Awaiting RPC requests on queue:', q);
           return ch.consume(q, async (msg) => {
-            const res = await this.rpcSrv.call(this, JSON.parse(msg.content.toString()));
+            let res;
+            try {
+              res = await this.rpcSrv.call(this, JSON.parse(msg.content.toString()));
+            } catch (error) {
+              res = error;
+            }
             ch.sendToQueue(msg.properties.replyTo, Buffer.from(JSON.stringify(res)), {correlationId: msg.properties.correlationId});
             ch.ack(msg);
           });
         }, err=>{
-          console.log("RPC Service error:", err);
+          console.log("[AMQP] RPC Service error:", err);
           return err;
         });
     }, err => {

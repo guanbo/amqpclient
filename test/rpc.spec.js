@@ -3,10 +3,10 @@
 const AMQPClient = require('..');
 const rpcServer = new AMQPClient();
 const rpcClient = new AMQPClient();
-const { spawnSync } = require('child_process');
+
+const q = 'test.rpc.request';
 
 describe('RPC', () => {
-  const q = 'test.rpc.request';
   const array = [1, 2, 3, 4];
   let count = 0;
 
@@ -37,5 +37,22 @@ describe('RPC', () => {
         done();
       }
     }, 300);
+  });
+});
+
+describe('RPC handle error', () => {
+  before((done) => {
+    rpcServer.rpcService(opts=>{
+      return Promise.reject(opts);
+    }, {queue: q}).then(()=>done(), done);
+  });
+
+  it('should handle error', (done) => {
+    const err = new Error('test');
+    err.code = 400;
+    rpcClient.rpc(err, {queue: q}).then(res=>{
+      res.should.have.property('code', 400);
+      done();
+    })
   });
 });
