@@ -1,6 +1,6 @@
 {
   "name": "amqp.node.client",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "private": false,
   "description": "AMQP(Advanced Message Queue Protocol) Client of Node.js",
   "homepage": "https://github.com/guanbo/amqpclient",
