@@ -117,6 +117,7 @@ class AMQPClient {
             ch.consume(q.queue, (msg)=>{
               if (msg.properties.correlationId == corr) {
                 resolve(JSON.parse(msg.content.toString()));
+                ch.deleteQueue(q.queue);
                 ch.close();
               } else {
                 console.log('correlationId expect:', corr, 'but got:', msg.properties.correlationId);
