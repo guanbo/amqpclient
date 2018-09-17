@@ -109,7 +109,7 @@ class AMQPClient {
       return conn.createChannel()
         .then(channel=>{
           ch = channel;
-          return ch.assertQueue('', {exclusive: true});
+          return ch.assertQueue('', {autoDelete: true});
         })
         .then(q=>{
           const corr = this.generateUuid();
