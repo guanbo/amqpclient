@@ -3,6 +3,7 @@
 const AMQPClient = require('..');
 const rpcServer = new AMQPClient();
 const rpcClient = new AMQPClient();
+const http = require('http');
 
 const q = 'test.rpc.request';
 
@@ -56,3 +57,46 @@ describe('RPC handle error', () => {
     })
   });
 });
+
+describe('auto delete rpc queues', () => {
+  before((done) => {
+    rpcServer.rpcService(opts => {
+      if(opts.model == 'Test') {
+        return Promise.resolve({result: 0}); 
+      }
+    }, {queue: q}).then(() => done(), done);
+  });
+
+  it('should be ok', (done) => {
+    RPC(10, done);
+  });
+
+  after('queues number', (done)=>{
+    http.request({
+      host: '127.0.0.1',
+      port: 15672,
+      path: '/api/queues',
+      auth: "guest:guest"
+    }, (res) => {
+      let data = new Buffer(0);
+      res.on('data', (trunked) => {
+        data = Buffer.concat([data, trunked]);
+      });
+      res.on('end', () => {
+        data = JSON.parse(data.toString());
+        data.should.have.property('length', 2);
+        done();
+      });
+    }).end();
+  });
+});
+
+function RPC(times, cb) {
+  rpcClient.rpc({model: 'Test', num: times}).then((result)=>{
+    if (times <= 0) {
+      cb();
+    } else {
+      RPC(times - 1, cb);
+    }
+  });
+}
