@@ -1,4 +1,5 @@
 # AMQP Client
+[![Build Status](https://travis-ci.org/guanbo/amqpclient.svg?branch=master)](https://travis-ci.org/guanbo/amqpclient)
 
 An AMQP Client of Node.js base on amqplib with auto reconnect
 
@@ -49,7 +50,6 @@ producer.start(ch => {
 ```
 
 ## RPC
-[![Build Status](https://travis-ci.org/guanbo/amqpclient.svg?branch=master)](https://travis-ci.org/guanbo/amqpclient)
 ### Server
 
 ```js
