@@ -1,0 +1,8 @@
+sudo: required
+language: node.js
+node_js:
+  - "10"
+  - "8"
+
+services:
+  - rabbitmq
