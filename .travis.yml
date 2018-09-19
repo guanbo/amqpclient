@@ -1,5 +1,5 @@
 sudo: required
-language: node.js
+language: node_js
 node_js:
   - "10"
   - "8"
