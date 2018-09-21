@@ -73,13 +73,14 @@ class AMQPClient {
    */
   rpcService(srv, rpcOptions) {
     if (srv) this.rpcSrv = srv;
-    if (rpcOptions) this.rpcOptions = Object.assign(this.rpcOptions, rpcOptions);
+    rpcOptions = rpcOptions || this.rpcOptions;
+    if (!rpcOptions.queue) return Promise.reject('unassigned queue');
     if (!this.rpcSrv) return Promise.resolve();
     return this.connect().then(conn=>{
       console.log('[AMQP] createChannel for RPC');
       return conn.createChannel()
         .then(ch=>{
-          const q = this.rpcOptions.queue;
+          const q = rpcOptions.queue;
           ch.assertQueue(q, {durable: false});
           ch.prefetch(1);
           console.log('[AMQP] Awaiting RPC requests on queue:', q);
@@ -104,7 +105,8 @@ class AMQPClient {
 
   rpc(opts, rpcOptions) {
     let ch;
-    if (!rpcOptions || !rpcOptions.queue) return Promise.reject('unassigned queue');
+    rpcOptions = rpcOptions || this.rpcOptions;
+    if (!rpcOptions.queue) return Promise.reject('unassigned queue');
     return this.connect().then(conn=>{
       return conn.createChannel()
         .then(channel=>{
