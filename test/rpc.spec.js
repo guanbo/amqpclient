@@ -58,10 +58,28 @@ describe('RPC handle error', () => {
   });
 });
 
+function getQueues(callback) {
+  http.request({
+    host: '127.0.0.1',
+    port: 15672,
+    path: '/api/queues',
+    auth: "guest:guest"
+  }, (res) => {
+    let data = new Buffer.alloc(0);
+    res.on('data', (trunked) => {
+      data = Buffer.concat([data, trunked]);
+    });
+    res.on('end', () => {
+      callback(JSON.parse(data.toString()));
+    });
+  }).end();
+}
+
 describe('auto delete rpc queues', () => {
   let queues;
   before((done) => {
     rpcServer.rpcService(opts => {
+      console.log(opts);
       if(opts.model == 'Test') {
         return Promise.resolve({result: 0}); 
       }
@@ -69,56 +87,30 @@ describe('auto delete rpc queues', () => {
   });
 
   before((done) => {
-    http.request({
-      host: '127.0.0.1',
-      port: 15672,
-      path: '/api/queues',
-      auth: "guest:guest"
-    }, (res) => {
-      let data = new Buffer(0);
-      res.on('data', (trunked) => {
-        data = Buffer.concat([data, trunked]);
-      });
-      res.on('end', () => {
-        data = JSON.parse(data.toString());
-        data.should.have.property('length');
-        queues = data.length;
-        done();
-      });
-    }).end();
+    getQueues((data)=>{
+      data.should.have.property('length');
+      queues = data.length;
+      done();
+    })
   });
 
-  it('should be ok', (done) => {
-    RPC(10, done);
-  });
+  for (let t = 0; t < 10; t++) {
+    describe('RPC times: '+t, () => {
+      it('should ok', (done) => {
+        rpcClient.rpc({model: 'Test', num: t}, {queue: q}).then((result)=>{
+          result.should.have.property('result', 0);
+          done();
+        });
+      });
+    });      
+  }
 
   after('queues number', (done)=>{
-    http.request({
-      host: '127.0.0.1',
-      port: 15672,
-      path: '/api/queues',
-      auth: "guest:guest"
-    }, (res) => {
-      let data = new Buffer(0);
-      res.on('data', (trunked) => {
-        data = Buffer.concat([data, trunked]);
-      });
-      res.on('end', () => {
-        data = JSON.parse(data.toString());
+    setTimeout(() => {
+      getQueues((data)=>{
         data.should.have.property('length', queues);
         done();
       });
-    }).end();
+    }, 1000);
   });
 });
-
-function RPC(times, cb) {
-  rpcClient.rpc({model: 'Test', num: times}).then((result)=>{
-    result.should.have.property('result', 0);
-    if (times <= 0) {
-      cb();
-    } else {
-      RPC(times - 1, cb);
-    }
-  });
-}

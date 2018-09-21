@@ -104,7 +104,7 @@ class AMQPClient {
 
   rpc(opts, rpcOptions) {
     let ch;
-    if (rpcOptions) this.rpcOptions = Object.assign(this.rpcOptions, rpcOptions);
+    if (!rpcOptions || !rpcOptions.queue) return Promise.reject('unassigned queue');
     return this.connect().then(conn=>{
       return conn.createChannel()
         .then(channel=>{
@@ -119,14 +119,14 @@ class AMQPClient {
                 resolve(JSON.parse(msg.content.toString()));
                 ch.close();
               } else {
-                console.log('correlationId expect:', corr, 'but got:', msg.properties.correlationId);
+                console.log('[AMQP] correlationId expect:', corr, 'but got:', msg.properties.correlationId);
               }
             },  {noAck: true});
-            ch.sendToQueue(this.rpcOptions.queue, Buffer.from(JSON.stringify(opts)), { correlationId: corr, replyTo: q.queue })    
+            ch.sendToQueue(rpcOptions.queue, Buffer.from(JSON.stringify(opts)), { correlationId: corr, replyTo: q.queue })    
           });
         })
         .catch(err=>{
-          console.log('RPC call error:', err);
+          console.log('[AMQP] RPC call error:', err);
           return err;
         });
     });
@@ -141,6 +141,7 @@ class AMQPClient {
   close() {
     if (this.conn) this.conn.close();
     this.conn = null;
+    console.log('[AMQP] connection manual close');
   }
 }
 
